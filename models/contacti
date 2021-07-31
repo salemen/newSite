@@ -1,0 +1,43 @@
+<?php
+
+namespace app\models;
+
+use Yii;
+
+
+class contact extends \yii\db\ActiveRecord
+{
+
+    public static function tableName()
+    {
+        return 'contact';  // модель работает с таблицей contact
+    }
+
+    public function getTelephone(){
+        return $this->hasMany(telephone::ClassName(), ['parent_id' =>'id']); // множественная связь с таблицей Telephone
+
+    }
+
+
+    public function rules()
+    {
+        return [
+            [['surname', 'name', 'patronymic'], 'required'], // обязательные поля для заполнения
+            [['surname', 'name', 'patronymic', 'tel'], 'string'],
+            [['date'], 'safe'],
+        ];
+    }
+
+
+    public function attributeLabels()  // перевод названия полей
+    {
+        return [
+            'id' => '№',
+            'surname' => 'Фамилия',
+            'name' => 'Имя',
+            'patronymic' => 'Отчество',
+            'tel' => 'Телефон',
+            'date' => 'Дата',
+        ];
+    }
+}
