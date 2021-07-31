@@ -41,109 +41,37 @@ class SiteController extends Controller
     /**
      * {@inheritdoc}
      */
-    public function actions()
+   public function actionAbout()
     {
-        return [
-            'error' => [
-                'class' => 'yii\web\ErrorAction',
-            ],
-            'captcha' => [
-                'class' => 'yii\captcha\CaptchaAction',
-                'fixedVerifyCode' => YII_ENV_TEST ? 'testme' : null,
-            ],
-        ];
-    }
+        if ($_POST['ball'] ) {  // проверяем есть ли $_POST['ball']
+            $ball = $_POST['ball'];  // если есть записываем данные в переменную $ball
+            $array = explode(',', $ball); // разделяем переменную по запятой на две части (два массива)
+            $lv = substr_count($array[0],'!'); // считаем количество ! в первом массиве
+            $lvo= substr_count($array[0],'?'); // счиаем количество ? в первом массиве
+            $rv = substr_count($array[1],'!'); // считаем количество ! в втором массиве
+            $rvo= substr_count($array[1],'?');  // считаем количество ? в втором массиве
 
-    /**
-     * Displays homepage.
-     *
-     * @return string
-     */
-    public function actionIndex()
-    {
-        return $this->render('index');
-    }
+            if (!$lv == 0) $lv = $lv * 2; // проверяем если $lv не равна нулю умножаем ее значение на 2
 
-    public function actionIndex1()
-    {
-        return $this->render('index1');
-    }
+            if (!$lvo == 0) $lvo = $lvo * 3;  // проверяем если $lvo не равна нулю умножаем ее значение на 3
 
-    public function actionIndex2()
-    {
-        return $this->render('index2');
-    }
+            if (!$rv == 0) $rv = $rv * 2;  // проверяем если $rv не равна нулю умножаем ее значение на 2
 
-    public function actionIndex3()
-    {
-        return $this->render('index3');
-    }
+            if (!$rvo == 0) $rvo = $rvo * 3;  // проверяем если $rvo не равна нулю умножаем ее значение на 3
 
+           $left =  $lv + $lvo; // прибавляем все суммы в левой части
+           $right = $rv + $rvo;  // прибавляем все суммы в правой части
 
-    public function actionIndex4()
-    {
-        return $this->render('index4');
-    }
+           if ($left > $right){ // проверяем если сумма в левой части больше чем правой
+               $ball = "left";  // записываем в переменную значение left
+           }elseif($left < $right){  // проверяем если сумма в правой части больше чем левой
+               $ball = "right";  // записываем в переменную значение right
+           }elseif($left = $right){  // проверяем если сумма в правой части и левой равны
+               $ball = "ballans"; // записываем в переменную значение ballans
+           }
 
-    /**
-     * Login action.
-     *
-     * @return Response|string
-     */
-    public function actionLogin()
-    {
-        if (!Yii::$app->user->isGuest) {
-            return $this->goHome();
         }
-
-        $model = new LoginForm();
-        if ($model->load(Yii::$app->request->post()) && $model->login()) {
-            return $this->goBack();
-        }
-
-        $model->password = '';
-        return $this->render('login', [
-            'model' => $model,
-        ]);
+        return $this->render('about', ['ball'=> $ball]); // передаем переменную ball обратно в шаблон и там выводим
     }
-
-    /**
-     * Logout action.
-     *
-     * @return Response
-     */
-    public function actionLogout()
-    {
-        Yii::$app->user->logout();
-
-        return $this->goHome();
-    }
-
-    /**
-     * Displays contact page.
-     *
-     * @return Response|string
-     */
-    public function actionContact()
-    {
-        $model = new ContactForm();
-        if ($model->load(Yii::$app->request->post()) && $model->contact(Yii::$app->params['adminEmail'])) {
-            Yii::$app->session->setFlash('contactFormSubmitted');
-
-            return $this->refresh();
-        }
-        return $this->render('contact', [
-            'model' => $model,
-        ]);
-    }
-
-    /**
-     * Displays about page.
-     *
-     * @return string
-     */
-    public function actionAbout()
-    {
-        return $this->render('about');
-    }
+}
 }
