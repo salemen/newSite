@@ -1,0 +1,86 @@
+<?php
+
+use yii\helpers\Html;
+use yii\helpers\Url;
+use yii\widgets\LinkPager;
+use app\models\telephone;
+
+
+
+$this->title = 'Контакты';
+$this->params['breadcrumbs'][] = $this->title;
+?>
+<div class="contact-index">
+
+    <h1><?= Html::encode($this->title) ?></h1>
+
+    <p>
+        <?= Html::a('Добавить новый контакт', ['create'], ['class' => 'btn btn-success']) ?>
+    </p>
+
+      // на этой странице решил обойтись без стандартной таблицы, а сделал отдельные карточки для каждого контакта
+
+    <?php if (!empty($model)): ?>  // проверяем есть переменная model или нет
+
+    <?php foreach ($model as $contact):?>  // если model есть, запускаем цыкл
+
+    <div class="col-sm-3">  // bootstrap класс для вывода 4 карточки в ряд
+
+                <div class="contact1-form"> // мвой класс чтоб красиво было ))
+
+                    <center><div class="single-form">
+
+                            <h5> № <?= $contact->id ?></h5>  // выводим данные в карточку
+                            <p>Фамилия: <?= $contact -> surname ?></p>
+                            <p> Имя: <?= $contact -> name ?></p>
+                            <p> Отчество: <?= $contact -> patronymic ?></p>
+                            <p> Дата: <?= $contact -> date ?></p>
+
+                            // вытягиваем данные по id клиента из таблицы с телефонами
+                            <?php $query = Telephone::find()->select('tel')->where(['parent_id' => $contact->id])->all();
+                             foreach ($query as $number):
+                                $tel = $number;
+                                ?>
+                                <td><?= $tel->tel ?></td>
+                             <?php  endforeach; ?>
+
+                             <br/>
+                                // внизу две кнопки относящиеся конкретно к данному клиенту
+                            <a href="<?= Url::to(['/contact/view', 'id'=>$contact->id]) ?>" class="btn btn-warning">подробнее</a>
+                            <a href="<?= Url::to(['/contact/update', 'id'=>$contact->id]) ?>" class="btn btn-warning">изменить</a>
+
+                            // внизу кнопка удалить с alert-ом
+                            <?php echo Html::a('Удалить', ['/contact/delete', 'id'=>$contact->id], [
+                                'data' => [
+                                    'method' => 'post',
+                                    'confirm' => 'Вы действительно хотите безвозвратно удалить контакт ?',]
+                            ]);?>
+
+
+                        </div></center>
+
+                </div>
+
+            </div>
+
+            <?php $i++ ?>
+            <?php if ($i % 4 == 0):?>  // четыре карточки в ряд
+                <div class="clearfix"></div>
+
+            <?php endif; ?>
+            <?php endforeach; ?>
+        <div class="clearfix"></div>
+        <?php
+        echo LinkPager::widget([  // виджет пагинатора, если карточек на странице больше 12 то включается панигация
+            'pagination' => $pages, // переменная переданная их контролера где указано количество карточек (count) и когда включать пагинацию
+        ]);
+        ?>
+        <?php else:?>
+            <h4>Контактов пока нет</h4>  // если перемнной model не будет, то будет отображаться эта надпись.
+            <br>
+        <?php endif; ?>
+
+
+
+</div>
+</div>
